@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Debugging Test - Part 2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /** ⚫
+        * I added a bit of styles to mimic RebelMouse's colors and typography
+        * And it is responsive, everything scales nicely
+        * ⚫ 🤓 **/
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Merriweather", serif;
+      }
+      body {
+        font-size: 16px;
+        text-align: center;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizelegibility;
+        color: #343434;
+      }
+      img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
+      a {
+        display: inline-block;
+      }
+      .header {
+        background: linear-gradient(180deg, #3591da 1.56%, #1182db 83.33%);
+        padding: 30px 0;
+      }
+      .header__group {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        margin: -7.5px;
+      }
+      .header__logo,
+      .header__tagline {
+        margin: 7.5px;
+      }
+      .header__tagline {
+        font-size: 35px;
+      }
+      main {
+        padding: 30px 0;
+      }
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 0 15px;
+      }
+      .list__title {
+        margin-bottom: 30px;
+      }
+      .list__group {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        background-color: #f4f9fd;
+        padding: 15px;
+      }
+      .list__group .list__group-item:not(:nth-child(2)) {
+        margin-top: 15px;
+      }
+      .loader {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(180deg, #3591da 1.56%, #1182db 83.33%);
+        --c: no-repeat linear-gradient(#000 0 0);
+        --s: 18px 18px;
+        -webkit-mask: var(--c) left 4px top 4px, var(--c) right 4px top 4px,
+          var(--c) right 4px bottom 4px, var(--c) left 4px bottom 4px,
+          linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        animation: l5 1.5s infinite;
+      }
+      .loader--hidden {
+        display: none;
+      }
+      @keyframes l5 {
+        0% {
+          -webkit-mask-size: 0 0, 0 0, 0 0, 0 0, auto;
+        }
+        12.5% {
+          -webkit-mask-size: var(--s), 0 0, 0 0, 0 0, auto;
+        }
+        25% {
+          -webkit-mask-size: var(--s), var(--s), 0 0, 0 0, auto;
+        }
+        37.5% {
+          -webkit-mask-size: var(--s), var(--s), var(--s), 0 0, auto;
+        }
+        50% {
+          -webkit-mask-size: var(--s), var(--s), var(--s), var(--s), auto;
+        }
+        62.5% {
+          -webkit-mask-size: 0 0, var(--s), var(--s), var(--s), auto;
+        }
+        75% {
+          -webkit-mask-size: 0 0, 0 0, var(--s), var(--s), auto;
+        }
+        87.5% {
+          -webkit-mask-size: 0 0, 0 0, 0 0, var(--s), auto;
+        }
+        100% {
+          -webkit-mask-size: 0 0, 0 0, 0 0, 0 0, auto;
+        }
+      }
+      .list__btn {
+        border: 0;
+        border-radius: 23px;
+        background: linear-gradient(180deg, #3591da 1.56%, #1182db 83.33%);
+        margin-top: 15px;
+        padding: 17.5px 26px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #fff;
+        opacity: 1;
+        cursor: pointer;
+        transition: opacity 300ms ease;
+      }
+      .list__btn:hover,
+      .list__btn:focus {
+        opacity: 0.8;
+      }
+      .list__btn--hidden {
+        display: none;
+      }
+    </style>
+    <script type="text/javascript">
+      /** ⚫
+       * Just an FYI
+       * This task could be done with the API 'limit' and 'offset' parameters
+       * However since the one of the requirements was ⛔ One call will load all the products in the catalog ⛔
+       * I came up with the following 🤓
+       * ⚫ **/
+
+      /** ⚪ run the script once the DOM is loaded and UI elements are available ⚪ **/
+      document.addEventListener("DOMContentLoaded", () => {
+        /** 🔴 define environmental variables 🔴 **/
+        const API_URL =
+          "https://moravac.rebelmouse.dev/r/kappa/api/v2/reader/furniture?api_key=xasE@fefscVSgb214r";
+        const ITEMS_PER_LOAD = 5;
+
+        /** 🔴 define state variables 🔴 **/
+        let startIndex = 0;
+        let data;
+
+        /** 🔴 get ui elements 🔴 **/
+        const productList = document.querySelector(".list__group");
+        const loader = document.querySelector(".loader");
+        let loadMoreButton;
+
+        /** 🟡 function to create an image element 🟡 **/
+        function createImageElement(imageUrl, altText = "Product image") {
+          const img = document.createElement("img");
+
+          img.src = imageUrl;
+          img.alt = altText;
+
+          return img;
+        }
+
+        /** 🟡 function to create a list element 🟡 **/
+        function createItemElement(itemData) {
+          const item = document.createElement("div");
+          const imgElement = createImageElement(itemData.image.size_980);
+
+          item.classList.add("list__group-item");
+          item.appendChild(imgElement);
+
+          return item;
+        }
+
+        /** 🟡 function to create a Load More button 🟡 **/
+        function createLoadMoreButton() {
+          const btn = document.createElement("button");
+
+          btn.textContent = "Load More";
+          btn.classList.add("list__btn");
+          btn.addEventListener("click", renderItems);
+
+          loadMoreButton = btn;
+          productList.appendChild(loadMoreButton);
+        }
+
+        /** 🟡 function to render items 🟡 **/
+        function renderItems() {
+          loader.classList.add("loader--hidden");
+
+          for (
+            let i = startIndex;
+            i < startIndex + ITEMS_PER_LOAD && i < data.length;
+            i++
+          ) {
+            const itemElement = createItemElement(data[i]);
+            productList.insertBefore(itemElement, loadMoreButton);
+          }
+
+          startIndex += ITEMS_PER_LOAD;
+
+          if (startIndex >= data.length) {
+            loadMoreButton.classList.add("list__btn--hidden");
+          }
+        }
+
+        /** 🔴
+         * the purpose of wrapping within setTimeout method IS ONLY to
+         * delay the execution of the fetch request so we can stare at
+         * the beauty of that loading spinner animation
+         * feel free to play with the milliseconds value 🤓
+         * 🔴 **/
+        setTimeout(() => {
+          loader.classList.remove("loader--hidden");
+
+          fetch(API_URL)
+            .then((response) => response.json())
+            .then((responseData) => {
+              data = responseData.data;
+              renderItems();
+              createLoadMoreButton();
+            })
+            .catch(() => {
+              alert("Sorry, there are no products available 🤪");
+            });
+        }, 2000);
+      });
+    </script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="header__group">
+          <a class="header__logo" href="#">
+            <img src="./part-2-img/rebelmouse.webp" alt="RebelMouse logo" />
+          </a>
+
+          <div class="header__tagline">
+            <strong>---> Test Part 2 📜</strong>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main>
+      <div class="container">
+        <div class="list">
+          <h1 class="list__title">Products ⬇️</h1>
+          <div class="list__group">
+            <div class="loader"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
