@@ -335,31 +335,15 @@
       .mb-2 > :last-child {
         margin-bottom: 0;
       }
-      @media only screen and (max-width: 767px) {
-        .hide-mobile {
-          display: none !important;
-        }
+
+      .hide-mobile,
+      .hide-tablet-and-mobile,
+      .hide-tablet-and-desktop,
+      .hide-tablet,
+      .hide-desktop {
+        display: none !important;
       }
-      @media only screen and (max-width: 1023px) {
-        .hide-tablet-and-mobile {
-          display: none !important;
-        }
-      }
-      @media only screen and (min-width: 768px) {
-        .hide-tablet-and-desktop {
-          display: none !important;
-        }
-      }
-      @media only screen and (min-width: 768px) and (max-width: 1023px) {
-        .hide-tablet {
-          display: none !important;
-        }
-      }
-      @media only screen and (min-width: 1024px) {
-        .hide-desktop {
-          display: none !important;
-        }
-      }
+
       .row.px10 {
         margin-left: -10px;
         margin-right: -10px;
