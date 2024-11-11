@@ -3680,19 +3680,13 @@
 
       .home__events-wrapper .post-section--events {
         background-color: var(--white);
-        margin-bottom: 22px;
-        padding: 20px;
+        margin-bottom: 21px;
+        padding: 20px 20px 17px 20px;
       }
 
       @media (min-width: 768px) {
         .home__events-wrapper .post-section--events {
-          margin-bottom: 21px;
-        }
-      }
-
-      @media (min-width: 1440px) {
-        .home__events-wrapper .post-section--events {
-          padding-bottom: 20px;
+          padding: 20px;
         }
       }
 
@@ -4026,11 +4020,21 @@
         > div::before {
         content: "Learn More";
         position: absolute;
-        bottom: 15px;
+        bottom: 17px;
         left: calc(50% - 34px);
         font-size: 12px;
         text-decoration: underline;
         color: #094b6d;
+      }
+
+      @media (min-width: 768px) {
+        .home__featured-wrapper
+          .post-section--featured-events
+          .page-article
+          > div
+          > div::before {
+          bottom: 15px;
+        }
       }
 
       .home__featured-wrapper
@@ -4239,8 +4243,14 @@
       }
 
       .home__events-wrapper .posts-wrapper .rm-col-center {
-        width: auto !important;
+        width: 115px !important;
         grid-area: rm-col-center;
+      }
+
+      @media (min-width: 768px) {
+        .home__events-wrapper .posts-wrapper .rm-col-center {
+          width: auto !important;
+        }
       }
 
       .home__events-wrapper .posts-wrapper .rm-col-center .widget__head img {
@@ -4271,7 +4281,7 @@
         .rm-col-right
         .widget__body
         .widget__headline {
-        margin: 1px 0 12px 0px;
+        margin: -2px 0 11px 0px;
       }
 
       @media (min-width: 768px) {
